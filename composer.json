@@ -1,0 +1,25 @@
+{
+    "name": "tebru/json-object",
+    "description": "Provides a data structure to ease access to multidimensional arrays in PHP",
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "php": ">=5.5",
+        "phpunit/phpunit": "4.3.*",
+        "mockery/mockery": "dev-master"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nate Brunette",
+            "email": "n@tebru.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Tebru\\": "src/",
+            "Tebru\\Test\\": "tests/"
+        }
+    }
+}
