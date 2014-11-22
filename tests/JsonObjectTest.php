@@ -5,6 +5,7 @@
 
 namespace Tebru\Test;
 
+use InvalidArgumentException;
 use OutOfBoundsException;
 use PHPUnit_Framework_TestCase;
 use ReflectionProperty;
@@ -133,6 +134,113 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
         $jsonObject = new JsonObject($array, ':');
         $exists = $jsonObject->exists('key1:key1-1');
         $this->assertTrue($exists);
+    }
+
+    public function testSetKey()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->set('key3', 'test');
+        $this->assertEquals('test', $jsonObject->get('key3'));
+        $this->assertEquals('value3', $array['key3']);
+    }
+
+    public function testSetKeyTwoLevels()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->set('key1.key1-1', 'test');
+        $this->assertEquals('test', $jsonObject->get('key1.key1-1'));
+        $this->assertEquals('value1', $array['key1']['key1-1']);
+    }
+
+    public function testSetKeyAddedToCache()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->set('key3', 'test');
+
+        $cacheProperty = new ReflectionProperty(JsonObject::class, 'cache');
+        $cacheProperty->setAccessible(true);
+        $cacheValue = $cacheProperty->getValue($jsonObject);
+
+        $this->assertEquals('test', $cacheValue['key3']);
+    }
+
+    public function testNewKey()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->set('key2.key2-2.test', 'test');
+        $this->assertEquals('test', $jsonObject->get('key2.key2-2.test'));
+        $this->assertEquals('value2', $jsonObject->get('key2.key2-2.key2-3'));
+    }
+
+    public function testTwoNewKeyLevels()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->set('key1.test.test2', 'test');
+        $this->assertEquals('test', $jsonObject->get('key1.test.test2'));
+    }
+
+    public function testAllNewKeys()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->set('test.test2.test3', 'test');
+        $this->assertEquals('test', $jsonObject->get('test.test2.test3'));
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testNewKeyThrowsException()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->set('key1.key1-1.test', 'test');
+    }
+
+    public function testNewKeyAddedToCache()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->set('key2.key2-2.test', 'test');
+
+        $cacheProperty = new ReflectionProperty(JsonObject::class, 'cache');
+        $cacheProperty->setAccessible(true);
+        $cacheValue = $cacheProperty->getValue($jsonObject);
+
+        $this->assertEquals('test', $cacheValue['key2.key2-2.test']);
+    }
+
+    public function testUnsetKey()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $this->assertTrue($jsonObject->exists('key3'));
+        $jsonObject->remove('key3');
+        $this->assertFalse($jsonObject->exists('key'));
+    }
+
+    public function testUnsetKeyTwoLevels()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $this->assertTrue($jsonObject->exists('key1.key1-1'));
+        $jsonObject->remove('key1.key1-1');
+        $this->assertFalse($jsonObject->exists('key1.key1-1'));
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function testUnsetWillThrowException()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject->remove('key4');
     }
 
     private function getMultiArray($encode = false)

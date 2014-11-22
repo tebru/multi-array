@@ -32,7 +32,7 @@ $jsonObject->exists('key2.nested-key'); // returns true
 $jsonObject->exists('key3'); // returns false
 ```
 
-Or get the value of a key
+Get the value of a key
 
 ```
 $jsonObject->get('key2'); // returns ['nested-key' => 'value2']
@@ -40,9 +40,26 @@ $jsonObject->get('key2.nested-key'); // returns 'value2'
 $jsonObject->get('key3'); // throws OutOfBoundsException
 ```
 
-We default to delimiting keys by a period (.), but that can be changed during instantiation
+Set the value of a key
+
+```
+$jsonObject->set('key1', 'value');
+$jsonObject->set('key2.nested-key', 'value');
+$jsonObject->set('key2.newKey', 'value');
+$jsonObject->set('key1.newKey', 'value'); // throws InvalidArgumentException
+```
+
+Remove the value of a key
+
+```
+$jsonObject->remove('key1');
+$jsonObject->remove('key2.unknown'); // throws OutOfBoundsException
+```
+
+We default to delimiting keys by a period `.`, but that can be changed during instantiation
 
 ```
 $jsonObject = new JsonObject($array, ':');
 $jsonObject = $jsonObjectFactory->make($array, '--');
 ```
+

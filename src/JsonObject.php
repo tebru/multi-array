@@ -22,6 +22,8 @@ use Traversable;
  */
 class JsonObject implements IteratorAggregate, JsonSerializable
 {
+    const EXCEPTION_KEY_MISSING = 'Could not find key in array.';
+
     /**
      * How keys will be delimited
      *
@@ -48,6 +50,7 @@ class JsonObject implements IteratorAggregate, JsonSerializable
      * @param array|string $jsonOrArray An array or string. If a string is provided, attempts
      *     to json_decode() it into an associative array.
      * @param string $keyDelimiter How array key access will be delimited
+     * @throws InvalidArgumentException
      */
     public function __construct($jsonOrArray, $keyDelimiter = '.')
     {
@@ -70,11 +73,10 @@ class JsonObject implements IteratorAggregate, JsonSerializable
     /**
      * Determine if a key exists
      *
-     * @param string $keyString
-     *
      * example:
      *     $jsonObject->exists('key1.key2');
      *
+     * @param string $keyString
      * @return bool
      */
     public function exists($keyString)
@@ -95,11 +97,10 @@ class JsonObject implements IteratorAggregate, JsonSerializable
     /**
      * Attempt to get a value by key
      *
-     * @param $keyString
-     *
      * example:
      *     $jsonObject->get('key1.key2');
      *
+     * @param $keyString
      * @return mixed
      * @throws OutOfBoundsException If the key does not exist
      */
@@ -109,11 +110,64 @@ class JsonObject implements IteratorAggregate, JsonSerializable
             return $this->cache[$keyString];
         }
 
-        $keys = explode($this->keyDelimiter, $keyString);
+        $keys = $this->getKeys($keyString);
         $value = $this->getValue($keys, $this->storage);
         $this->cache[$keyString] = $value;
 
         return $value;
+    }
+
+    /**
+     * Set the value
+     *
+     * example:
+     *     $jsonObject->set('key1.key2', 'value');
+     *
+     * @param string $keyString
+     * @param mixed $value
+     * @throws InvalidArgumentException
+     */
+    public function set($keyString, $value)
+    {
+        $keys = $this->getKeys($keyString);
+        $this->setValue($keys, $this->storage, $value);
+
+        // set or override cache
+        $this->cache[$keyString] = $value;
+    }
+
+    /**
+     * Remove by key
+     *
+     * example:
+     *     $jsonObject->remove('key1.key2');
+     *
+     * @param string$keyString
+     * @throws OutOfBoundsException
+     */
+    public function remove($keyString)
+    {
+        if (!$this->exists($keyString)) {
+            throw new OutOfBoundsException(self::EXCEPTION_KEY_MISSING);
+        }
+
+        $keys = $this->getKeys($keyString);
+        $this->unsetValue($keys, $this->storage);
+
+        if ($this->inCache($keyString)) {
+            unset($this->cache[$keyString]);
+        }
+    }
+
+    /**
+     * Get keys array
+     *
+     * @param string $keyString
+     * @return array
+     */
+    private function getKeys($keyString)
+    {
+        return explode($this->keyDelimiter, $keyString);
     }
 
     /**
@@ -124,15 +178,15 @@ class JsonObject implements IteratorAggregate, JsonSerializable
      *
      * @param array $keys
      * @param mixed $element
-     *
      * @return mixed
+     * @throws OutOfBoundsException If the key doesn't exist
      */
-    private function getValue(array &$keys, $element)
+    private function getValue(array &$keys, &$element)
     {
         $checkKey = array_shift($keys);
 
         if (!isset($element[$checkKey])) {
-            throw new OutOfBoundsException('Could not find key in array.');
+            throw new OutOfBoundsException(self::EXCEPTION_KEY_MISSING);
         }
 
         if (empty($keys)) {
@@ -143,10 +197,64 @@ class JsonObject implements IteratorAggregate, JsonSerializable
     }
 
     /**
+     * Set the value
+     *
+     * @param array $keys
+     * @param mixed $element
+     * @param mixed $value
+     * @return mixed
+     * @throws InvalidArgumentException If we try to set a key on a non-array
+     */
+    private function setValue(array &$keys, &$element, &$value)
+    {
+        $checkKey = array_shift($keys);
+
+        if (empty($keys)) {
+            if (!is_array($element)) {
+                throw new InvalidArgumentException('Expected array, got ' . gettype($element));
+            }
+
+            $element[$checkKey] = $value;
+
+            return $element[$checkKey];
+        }
+
+        if (!isset($element[$checkKey])) {
+            $element[$checkKey] = [];
+        }
+
+        return $this->setValue($keys, $element[$checkKey], $value);
+    }
+
+    /**
+     * Unset a key
+     *
+     * @param array $keys
+     * @param $element
+     * @return null
+     * @throws OutOfBoundsException If the key doesn't exist
+     */
+    private function unsetValue(array &$keys, &$element)
+    {
+        $checkKey = array_shift($keys);
+
+        if (!isset($element[$checkKey])) {
+            throw new OutOfBoundsException(self::EXCEPTION_KEY_MISSING);
+        }
+
+        if (empty($keys)) {
+            unset($element[$checkKey]);
+
+            return null;
+        }
+
+        return $this->unsetValue($keys, $element[$checkKey]);
+    }
+
+    /**
      * Check if the key is currently in the cache
      *
      * @param string $keyString
-     *
      * @return bool
      */
     private function inCache($keyString)
