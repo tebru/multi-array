@@ -63,3 +63,11 @@ $jsonObject = new JsonObject($array, ':');
 $jsonObject = $jsonObjectFactory->make($array, '--');
 ```
 
+You can also access the object like a normal array
+
+```
+isset($jsonObject['key2.nested-key']);
+$jsonObject['key2.nested-key];
+$jsonObject['key2.nested-key'] = 'value';
+unset($jsonObject['key2.nested-key']);
+```

@@ -56,6 +56,14 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('value2', $value);
     }
 
+    public function testCanAccessWithPhp()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $value = $jsonObject['key2.key2-2.key2-3'];
+        $this->assertEquals('value2', $value);
+    }
+
     /**
      * @expectedException OutOfBoundsException
      */
@@ -64,6 +72,16 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
         $array = $this->getMultiArray();
         $jsonObject = new JsonObject($array);
         $jsonObject->get('key1.key3');
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function getWithPhpWillThrowException()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject['key1.key3'];
     }
 
     public function testExistsTrue()
@@ -80,6 +98,14 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
         $jsonObject = new JsonObject($array);
         $exists = $jsonObject->exists('key2.key5');
         $this->assertFalse($exists);
+    }
+
+    public function testPhpExists()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $exists = isset($jsonObject['key2.key2-2.key2-3']);
+        $this->assertTrue($exists);
     }
 
     public function testCanIterate()
@@ -192,6 +218,14 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('test', $jsonObject->get('test.test2.test3'));
     }
 
+    public function testNewKeysPhp()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject['test.test2.test3'] = 'test';
+        $this->assertEquals('test', $jsonObject['test.test2.test3']);
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */
@@ -200,6 +234,16 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
         $array = $this->getMultiArray();
         $jsonObject = new JsonObject($array);
         $jsonObject->set('key1.key1-1.test', 'test');
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testNewKeyPhpThrowsException()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $jsonObject['key1.key1-1.test'] = 'test';
     }
 
     public function testNewKeyAddedToCache()
@@ -233,6 +277,15 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($jsonObject->exists('key1.key1-1'));
     }
 
+    public function testUnsetWithPhp()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        $this->assertTrue(isset($jsonObject['key1.key1-1']));
+        unset($jsonObject['key1.key1-1']);
+        $this->assertFalse(isset($jsonObject['key1.key1-1']));
+    }
+
     /**
      * @expectedException OutOfBoundsException
      */
@@ -241,6 +294,16 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
         $array = $this->getMultiArray();
         $jsonObject = new JsonObject($array);
         $jsonObject->remove('key4');
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function testUnsetPhpWillThrowException()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new JsonObject($array);
+        unset($jsonObject['key']);
     }
 
     private function getMultiArray($encode = false)
