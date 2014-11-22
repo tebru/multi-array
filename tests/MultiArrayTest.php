@@ -1,6 +1,6 @@
 <?php
 /**
- * File JsonObjectTest.php 
+ * File MultiArrayTest.php
  */
 
 namespace Tebru\Test;
@@ -9,33 +9,33 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use PHPUnit_Framework_TestCase;
 use ReflectionProperty;
-use Tebru\JsonObject;
+use Tebru\MultiArray;
 
 /**
- * Class JsonObjectTest
+ * Class MultiArrayTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class JsonObjectTest extends PHPUnit_Framework_TestCase
+class MultiArrayTest extends PHPUnit_Framework_TestCase
 {
     public function testCanCreateFromJson()
     {
         $array = $this->getMultiArray(true);
-        $jsonObject = new JsonObject($array);
-        $this->assertTrue($jsonObject instanceof JsonObject);
+        $jsonObject = new MultiArray($array);
+        $this->assertTrue($jsonObject instanceof MultiArray);
     }
 
     public function testCanCreateFromArray()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
-        $this->assertTrue($jsonObject instanceof JsonObject);
+        $jsonObject = new MultiArray($array);
+        $this->assertTrue($jsonObject instanceof MultiArray);
     }
 
     public function testCanAccessKey()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $value = $jsonObject->get('key3');
         $this->assertEquals('value3', $value);
     }
@@ -43,7 +43,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testCanAccessKeyOneLevel()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $value = $jsonObject->get('key1.key1-1');
         $this->assertEquals('value1', $value);
     }
@@ -51,7 +51,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testCanAccessKeyTwoLevels()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $value = $jsonObject->get('key2.key2-2.key2-3');
         $this->assertEquals('value2', $value);
     }
@@ -59,7 +59,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testCanAccessWithPhp()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $value = $jsonObject['key2.key2-2.key2-3'];
         $this->assertEquals('value2', $value);
     }
@@ -70,7 +70,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testInvalidKeyWillThrowException()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->get('key1.key3');
     }
 
@@ -80,14 +80,14 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function getWithPhpWillThrowException()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject['key1.key3'];
     }
 
     public function testExistsTrue()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $exists = $jsonObject->exists('key2.key2-2.key2-3');
         $this->assertTrue($exists);
     }
@@ -95,7 +95,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testExistsFalse()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $exists = $jsonObject->exists('key2.key5');
         $this->assertFalse($exists);
     }
@@ -103,7 +103,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testPhpExists()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $exists = isset($jsonObject['key2.key2-2.key2-3']);
         $this->assertTrue($exists);
     }
@@ -111,7 +111,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testCanIterate()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $keyCounter = 1;
         foreach ($jsonObject as $key => $element) {
             $this->assertEquals('key' . $keyCounter, $key);
@@ -123,7 +123,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     {
         $array = $this->getMultiArray();
         $json = $this->getMultiArray(true);
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObjectSerialized = json_encode($jsonObject);
         $this->assertSame($json, $jsonObjectSerialized);
     }
@@ -131,10 +131,10 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testWillUseCacheForGet()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->get('key1.key1-1');
 
-        $cacheProperty = new ReflectionProperty(JsonObject::class, 'cache');
+        $cacheProperty = new ReflectionProperty(MultiArray::class, 'cache');
         $cacheProperty->setAccessible(true);
         $cacheValue = $cacheProperty->getValue($jsonObject);
 
@@ -144,10 +144,10 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testWillUseCacheForExists()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->exists('key1.key1-1');
 
-        $cacheProperty = new ReflectionProperty(JsonObject::class, 'cache');
+        $cacheProperty = new ReflectionProperty(MultiArray::class, 'cache');
         $cacheProperty->setAccessible(true);
         $cacheValue = $cacheProperty->getValue($jsonObject);
 
@@ -157,7 +157,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testCanUseDifferentDelimiter()
     {
         $array = $this->getMultiArray(true);
-        $jsonObject = new JsonObject($array, ':');
+        $jsonObject = new MultiArray($array, ':');
         $exists = $jsonObject->exists('key1:key1-1');
         $this->assertTrue($exists);
     }
@@ -165,7 +165,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testSetKey()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->set('key3', 'test');
         $this->assertEquals('test', $jsonObject->get('key3'));
         $this->assertEquals('value3', $array['key3']);
@@ -174,7 +174,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testSetKeyTwoLevels()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->set('key1.key1-1', 'test');
         $this->assertEquals('test', $jsonObject->get('key1.key1-1'));
         $this->assertEquals('value1', $array['key1']['key1-1']);
@@ -183,10 +183,10 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testSetKeyAddedToCache()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->set('key3', 'test');
 
-        $cacheProperty = new ReflectionProperty(JsonObject::class, 'cache');
+        $cacheProperty = new ReflectionProperty(MultiArray::class, 'cache');
         $cacheProperty->setAccessible(true);
         $cacheValue = $cacheProperty->getValue($jsonObject);
 
@@ -196,7 +196,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testNewKey()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->set('key2.key2-2.test', 'test');
         $this->assertEquals('test', $jsonObject->get('key2.key2-2.test'));
         $this->assertEquals('value2', $jsonObject->get('key2.key2-2.key2-3'));
@@ -205,7 +205,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testTwoNewKeyLevels()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->set('key1.test.test2', 'test');
         $this->assertEquals('test', $jsonObject->get('key1.test.test2'));
     }
@@ -213,7 +213,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testAllNewKeys()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->set('test.test2.test3', 'test');
         $this->assertEquals('test', $jsonObject->get('test.test2.test3'));
     }
@@ -221,7 +221,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testNewKeysPhp()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject['test.test2.test3'] = 'test';
         $this->assertEquals('test', $jsonObject['test.test2.test3']);
     }
@@ -232,7 +232,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testNewKeyThrowsException()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->set('key1.key1-1.test', 'test');
     }
 
@@ -242,17 +242,17 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testNewKeyPhpThrowsException()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject['key1.key1-1.test'] = 'test';
     }
 
     public function testNewKeyAddedToCache()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->set('key2.key2-2.test', 'test');
 
-        $cacheProperty = new ReflectionProperty(JsonObject::class, 'cache');
+        $cacheProperty = new ReflectionProperty(MultiArray::class, 'cache');
         $cacheProperty->setAccessible(true);
         $cacheValue = $cacheProperty->getValue($jsonObject);
 
@@ -262,7 +262,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testUnsetKey()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $this->assertTrue($jsonObject->exists('key3'));
         $jsonObject->remove('key3');
         $this->assertFalse($jsonObject->exists('key'));
@@ -271,7 +271,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testUnsetKeyTwoLevels()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $this->assertTrue($jsonObject->exists('key1.key1-1'));
         $jsonObject->remove('key1.key1-1');
         $this->assertFalse($jsonObject->exists('key1.key1-1'));
@@ -280,7 +280,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testUnsetWithPhp()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $this->assertTrue(isset($jsonObject['key1.key1-1']));
         unset($jsonObject['key1.key1-1']);
         $this->assertFalse(isset($jsonObject['key1.key1-1']));
@@ -292,7 +292,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testUnsetWillThrowException()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         $jsonObject->remove('key4');
     }
 
@@ -302,7 +302,7 @@ class JsonObjectTest extends PHPUnit_Framework_TestCase
     public function testUnsetPhpWillThrowException()
     {
         $array = $this->getMultiArray();
-        $jsonObject = new JsonObject($array);
+        $jsonObject = new MultiArray($array);
         unset($jsonObject['key']);
     }
 

@@ -1,5 +1,5 @@
 {
-    "name": "tebru/json-object",
+    "name": "tebru/multi-array",
     "description": "Provides a data structure to ease access to multidimensional arrays in PHP",
     "require": {
         "php": ">=5.4"

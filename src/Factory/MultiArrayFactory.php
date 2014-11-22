@@ -1,21 +1,21 @@
 <?php
 /**
- * File JsonObjectFactory.php 
+ * File MultiArrayFactory.php
  */
 
 namespace Tebru\Factory;
 
-use Tebru\JsonObject;
+use Tebru\MultiArray;
 
 /**
- * Class JsonObjectFactory
+ * Class MultiArrayFactory
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class JsonObjectFactory
+class MultiArrayFactory
 {
     public function make($jsonOrArray, $delimiter = '.')
     {
-        return new JsonObject($jsonOrArray, $delimiter);
+        return new MultiArray($jsonOrArray, $delimiter);
     }
 } 

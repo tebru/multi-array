@@ -1,6 +1,6 @@
 <?php
 /**
- * File JsonObject.php 
+ * File MultiArray.php
  */
 
 namespace Tebru;
@@ -14,14 +14,14 @@ use OutOfBoundsException;
 use Traversable;
 
 /**
- * Class JsonObject
+ * Class MultiArray
  *
  * Attempts to ease access to multidimensional arrays. Created with the intention of
  * accessing json response values.
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class JsonObject implements IteratorAggregate, JsonSerializable, ArrayAccess
+class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
 {
     const EXCEPTION_KEY_MISSING = 'Could not find key in array.';
 
