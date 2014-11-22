@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tebru/json-object.svg?branch=master)](https://travis-ci.org/tebru/json-object)
+
 # JsonObject
 This project aims to provide easier access to multidimensional arrays.  Json responses were in mind during the creation.  The goal is to make it easier to check if keys are set multiple levels deep, and retrieve the value.
 
