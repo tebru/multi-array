@@ -14,6 +14,14 @@ use Tebru\MultiArray;
  */
 class MultiArrayFactory
 {
+    /**
+     * Make a MultiArray
+     *
+     * @param string|array $jsonOrArray
+     * @param string $delimiter
+     *
+     * @return MultiArray
+     */
     public function make($jsonOrArray, $delimiter = '.')
     {
         return new MultiArray($jsonOrArray, $delimiter);

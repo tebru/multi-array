@@ -10,7 +10,7 @@ composer require tebru/multi-array:~0.1
 ```
 
 ## Usage
-Create the object by either instantiating it or using the factory.  Pass in a json object or array.
+Create the object by either instantiating it or using the factory. i Pass in a json object or array.  An InvalidArgumentException will be thrown if it can't decode the json, or the variable isn't an array.
 
 ```
 $array = [
@@ -67,7 +67,7 @@ You can also access the object like a normal array
 
 ```
 isset($multiArray['key2.nested-key']);
-$multiArray['key2.nested-key];
+$multiArray['key2.nested-key'];
 $multiArray['key2.nested-key'] = 'value';
 unset($multiArray['key2.nested-key']);
 ```
