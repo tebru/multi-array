@@ -215,7 +215,11 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
                 throw new InvalidArgumentException('Expected array, got ' . gettype($element));
             }
 
-            $element[$checkKey] = $value;
+            if (!isset($element[$checkKey])) {
+                $element[$checkKey] = $value;
+            } else {
+                array_push($element[$checkKey], $value);
+            }
 
             return $element[$checkKey];
         }
