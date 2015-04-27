@@ -180,6 +180,15 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('value1', $array['key1']['key1-1']);
     }
 
+    public function testSetKeysInDiffOrder()
+    {
+        $array = $this->getMultiArray();
+        $jsonObject = new MultiArray($array);
+        $jsonObject->set('key1.key1-1', 'test');
+        $this->assertEquals('test', $jsonObject->get('key1.key1-1'));
+        $this->assertEquals('value1', $array['key1']['key1-1']);
+    }
+
     public function testSetKeyAddedToCache()
     {
         $array = $this->getMultiArray();
