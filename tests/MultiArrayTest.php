@@ -180,15 +180,6 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('value1', $array['key1']['key1-1']);
     }
 
-    public function testSetKeysInDiffOrder()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject->set('key1.key1-1', 'test');
-        $this->assertEquals('test', $jsonObject->get('key1.key1-1'));
-        $this->assertEquals('value1', $array['key1']['key1-1']);
-    }
-
     public function testSetKeyAddedToCache()
     {
         $array = $this->getMultiArray();
@@ -233,26 +224,6 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $jsonObject = new MultiArray($array);
         $jsonObject['test.test2.test3'] = 'test';
         $this->assertEquals('test', $jsonObject['test.test2.test3']);
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testNewKeyThrowsException()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject->set('key1.key1-1.test', 'test');
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testNewKeyPhpThrowsException()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject['key1.key1-1.test'] = 'test';
     }
 
     public function testNewKeyAddedToCache()

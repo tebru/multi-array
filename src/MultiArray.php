@@ -218,7 +218,15 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
             if (!isset($element[$checkKey])) {
                 $element[$checkKey] = $value;
             } else {
-                array_push($element[$checkKey], $value);
+                if (!is_array($element[$checkKey])) {
+                    $temp_value = $element[$checkKey];
+                    $element[$checkKey] = array();
+                    array_push($element[$checkKey], $temp_value);
+                    array_push($element[$checkKey], $value);
+                } else {
+                    array_push($element[$checkKey], $value);
+                }
+
             }
 
             return $element[$checkKey];
@@ -228,7 +236,12 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
             $element[$checkKey] = [];
         }
 
-        return $this->setValue($keys, $element[$checkKey], $value);
+        if (!is_array($element[$checkKey])) {
+            return $this->setValue($keys, $element, $value);
+        } else {
+            return $this->setValue($keys, $element[$checkKey], $value);
+        }
+
     }
 
     /**
