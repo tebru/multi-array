@@ -186,7 +186,7 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
     {
         $checkKey = array_shift($keys);
 
-        if (!isset($element[$checkKey])) {
+        if (!array_key_exists($checkKey, $element)) {
             throw new OutOfBoundsException(self::EXCEPTION_KEY_MISSING);
         }
 
