@@ -226,26 +226,6 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('test', $jsonObject['test.test2.test3']);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testNewKeyThrowsException()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject->set('key1.key1-1.test', 'test');
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testNewKeyPhpThrowsException()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject['key1.key1-1.test'] = 'test';
-    }
-
     public function testNewKeyAddedToCache()
     {
         $array = $this->getMultiArray();
@@ -304,6 +284,25 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $array = $this->getMultiArray();
         $jsonObject = new MultiArray($array);
         unset($jsonObject['key']);
+    }
+
+    public function testSetKeyInDiffOrder()
+    {
+
+        $multiArray1 = new MultiArray(array());
+        $multiArray1->set('key1.key2.key3.key4', 'value1');
+        $multiArray1->set('key1.key2.key5', 'value2');
+        $multiArray1->set('key1.key2', 'value3');
+
+        $multiArray2 = new MultiArray(array());
+        $multiArray2->set('key1.key2', 'value3');
+        $multiArray2->set('key1.key2.key5', 'value2');
+        $multiArray2->set('key1.key2.key3.key4', 'value1');
+
+        $this->assertEquals($multiArray1->get('key1.key2'), $multiArray2->get('key1.key2'));
+        $this->assertEquals($multiArray1->get('key1.key2.key5'), $multiArray2->get('key1.key2.key5'));
+        $this->assertEquals($multiArray1->get('key1.key2.key3.key4'), $multiArray2->get('key1.key2.key3.key4'));
+
     }
 
     private function getMultiArray($encode = false)
