@@ -39,13 +39,6 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
     private $storage = [];
 
     /**
-     * A cache of keys that have been verified and values
-     *
-     * @var array $cache
-     */
-    private $cache = [];
-
-    /**
      * Constructor
      *
      * @param array|string $jsonOrArray An array or string. If a string is provided, attempts
@@ -82,10 +75,6 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
      */
     public function exists($keyString)
     {
-        if (true === $this->inCache($keyString)) {
-            return true;
-        }
-
         try {
             $this->get($keyString);
         } catch (OutOfBoundsException $e) {
@@ -107,13 +96,8 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
      */
     public function get($keyString)
     {
-        if (true === $this->inCache($keyString)) {
-            return $this->cache[$keyString];
-        }
-
         $keys = $this->getKeys($keyString);
         $value = $this->getValue($keys, $this->storage);
-        $this->cache[$keyString] = $value;
 
         return $value;
     }
@@ -132,9 +116,6 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
     {
         $keys = $this->getKeys($keyString);
         $this->setValue($keys, $this->storage, $value);
-
-        // set or override cache
-        $this->cache[$keyString] = $value;
     }
 
     /**
@@ -154,10 +135,6 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
 
         $keys = $this->getKeys($keyString);
         $this->unsetValue($keys, $this->storage);
-
-        if ($this->inCache($keyString)) {
-            unset($this->cache[$keyString]);
-        }
     }
 
     /**
@@ -206,7 +183,7 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
      * @return mixed
      * @throws InvalidArgumentException If we try to set a key on a non-array
      */
-    private function setValue(array &$keys, &$element, &$value)
+    private function setValue(array &$keys, &$element, $value)
     {
         $checkKey = array_shift($keys);
 
@@ -250,17 +227,6 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
         }
 
         return $this->unsetValue($keys, $element[$checkKey]);
-    }
-
-    /**
-     * Check if the key is currently in the cache
-     *
-     * @param string $keyString
-     * @return bool
-     */
-    private function inCache($keyString)
-    {
-        return isset($this->cache[$keyString]);
     }
 
     /**

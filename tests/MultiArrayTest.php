@@ -8,7 +8,6 @@ namespace Tebru\Test;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use PHPUnit_Framework_TestCase;
-use ReflectionProperty;
 use Tebru\MultiArray;
 
 /**
@@ -128,32 +127,6 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $this->assertSame($json, $jsonObjectSerialized);
     }
 
-    public function testWillUseCacheForGet()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject->get('key1.key1-1');
-
-        $cacheProperty = new ReflectionProperty(MultiArray::class, 'cache');
-        $cacheProperty->setAccessible(true);
-        $cacheValue = $cacheProperty->getValue($jsonObject);
-
-        $this->assertEquals('value1', $cacheValue['key1.key1-1']);
-    }
-
-    public function testWillUseCacheForExists()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject->exists('key1.key1-1');
-
-        $cacheProperty = new ReflectionProperty(MultiArray::class, 'cache');
-        $cacheProperty->setAccessible(true);
-        $cacheValue = $cacheProperty->getValue($jsonObject);
-
-        $this->assertEquals('value1', $cacheValue['key1.key1-1']);
-    }
-
     public function testCanUseDifferentDelimiter()
     {
         $array = $this->getMultiArray(true);
@@ -178,19 +151,6 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $jsonObject->set('key1.key1-1', 'test');
         $this->assertEquals('test', $jsonObject->get('key1.key1-1'));
         $this->assertEquals('value1', $array['key1']['key1-1']);
-    }
-
-    public function testSetKeyAddedToCache()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject->set('key3', 'test');
-
-        $cacheProperty = new ReflectionProperty(MultiArray::class, 'cache');
-        $cacheProperty->setAccessible(true);
-        $cacheValue = $cacheProperty->getValue($jsonObject);
-
-        $this->assertEquals('test', $cacheValue['key3']);
     }
 
     public function testNewKey()
@@ -244,19 +204,6 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $array = $this->getMultiArray();
         $jsonObject = new MultiArray($array);
         $jsonObject['key1.key1-1.test'] = 'test';
-    }
-
-    public function testNewKeyAddedToCache()
-    {
-        $array = $this->getMultiArray();
-        $jsonObject = new MultiArray($array);
-        $jsonObject->set('key2.key2-2.test', 'test');
-
-        $cacheProperty = new ReflectionProperty(MultiArray::class, 'cache');
-        $cacheProperty->setAccessible(true);
-        $cacheValue = $cacheProperty->getValue($jsonObject);
-
-        $this->assertEquals('test', $cacheValue['key2.key2-2.test']);
     }
 
     public function testUnsetKey()
