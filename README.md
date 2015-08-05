@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/tebru/multi-array.svg?branch=master)](https://travis-ci.org/tebru/multi-array)
+[![Coverage Status](https://coveralls.io/repos/tebru/multi-array/badge.svg?branch=master&service=github)](https://coveralls.io/github/tebru/multi-array?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/tebru/multi-array/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/tebru/multi-array/?branch=master)
 
 # MultiArray
 This project aims to provide easier access to multidimensional arrays.  Json responses were in mind during the creation.  The goal is to make it easier to check if keys are set multiple levels deep, and retrieve the value.
