@@ -129,10 +129,6 @@ class MultiArray implements IteratorAggregate, JsonSerializable, ArrayAccess
      */
     public function remove($keyString)
     {
-        if (!$this->exists($keyString)) {
-            throw new OutOfBoundsException(self::EXCEPTION_KEY_MISSING);
-        }
-
         $keys = $this->getKeys($keyString);
         $this->unsetValue($keys, $this->storage);
     }

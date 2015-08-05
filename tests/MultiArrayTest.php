@@ -31,6 +31,24 @@ class MultiArrayTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($jsonObject instanceof MultiArray);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Could not decode json string into array.
+     */
+    public function testCreateWillThrowExceptionWithInvalidJson()
+    {
+        new MultiArray('{asdf: asdf}');
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Expected array or string, got boolean
+     */
+    public function testCreateWillThrowExceptionWithNonStringNonArray()
+    {
+        new MultiArray(true);
+    }
+
     public function testCanAccessKey()
     {
         $array = $this->getMultiArray();
